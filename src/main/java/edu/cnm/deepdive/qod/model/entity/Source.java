@@ -6,8 +6,10 @@ import edu.cnm.deepdive.qod.view.FlatQuote;
 import edu.cnm.deepdive.qod.view.FlatSource;
 import java.net.URI;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.persistence.CascadeType;
@@ -28,7 +30,9 @@ import org.springframework.hateoas.EntityLinks;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+
+
+@JsonIgnoreProperties(value = {"created","quotes","href"}, allowGetters = true,ignoreUnknown = true)
 @Component
 @Entity
 public class Source implements FlatSource {
@@ -57,13 +61,11 @@ public class Source implements FlatSource {
   private String name;
 
   @JsonSerialize(contentAs = FlatQuote.class)
-
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sources",
   cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 
   @OrderBy ("text ASC")
-
-  private List<Quote> quotes = new LinkedList<>();
+  private Set<Quote> quotes = new LinkedHashSet<>();
 
   public UUID getId() {
     return id;
@@ -81,13 +83,10 @@ public class Source implements FlatSource {
     this.name = name;
   }
 
-  public List<Quote> getQuotes() {
+  public Set<Quote> getQuotes() {
     return quotes;
   }
 
-  public void setQuotes(List<Quote> quotes) {
-    this.quotes = quotes;
-  }
 
   @PostConstruct
   private void init(){
