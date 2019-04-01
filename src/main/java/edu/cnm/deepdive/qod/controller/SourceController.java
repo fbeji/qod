@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@ExposesResourceFor(Source.class)
 @RequestMapping("/sources")
 public class SourceController {
 
@@ -54,9 +57,9 @@ public class SourceController {
 
   @ResponseStatus(value = HttpStatus.CREATED)
 
-  public Source post(@RequestBody Source source){
+  public ResponseEntity<Source> post(@RequestBody Source source){
     sourceRepository.save(source);
-    return source;
+    return ResponseEntity.created(source.getHref()).body(source);
   }
 
   @DeleteMapping(value = "{sourceId}")
